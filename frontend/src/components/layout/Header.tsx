@@ -12,7 +12,7 @@
 import { Badge, Box, Breadcrumbs, ColorModeSwitch, CopyButton, Flex, Text } from '@redpanda-data/ui';
 import { computed } from 'mobx';
 import { observer } from 'mobx-react';
-import { useRouteMatch } from 'react-router-dom';
+import { useMatch } from 'react-router-dom';
 import { isEmbedded } from '../../config';
 import { type BreadcrumbEntry, uiState } from '../../state/uiState';
 import { IsDev } from '../../utils/env';
@@ -102,53 +102,46 @@ export default AppPageHeader;
  * @returns {boolean} Indicates whether the refresh button should be shown (true/false).
  */
 function useShouldShowRefresh() {
-  const connectClusterMatch = useRouteMatch<{ clusterName: string; connectorName: string }>({
+  const connectClusterMatch = useMatch({
     path: '/connect-clusters/:clusterName/:connectorName',
-    strict: false,
-    sensitive: true,
-    exact: true,
+    end: false,
+    caseSensitive: true,
   });
 
-  const schemaCreateMatch = useRouteMatch({
+  const schemaCreateMatch = useMatch({
     path: '/schema-registry/create',
-    strict: false,
-    sensitive: true,
-    exact: true,
+    end: false,
+    caseSensitive: true,
   });
 
-  const topicProduceRecordMatch = useRouteMatch({
+  const topicProduceRecordMatch = useMatch({
     path: '/topics/:topicName/produce-record',
-    strict: false,
-    sensitive: true,
-    exact: true,
+    end: false,
+    caseSensitive: true,
   });
 
-  const secretsMatch = useRouteMatch({
+  const secretsMatch = useMatch({
     path: '/secrets',
-    strict: false,
-    sensitive: true,
-    exact: true,
+    end: false,
+    caseSensitive: true,
   });
 
-  const agentsMatch = useRouteMatch({
+  const agentsMatch = useMatch({
     path: '/agents',
-    strict: false,
-    sensitive: true,
-    exact: true,
+    end: false,
+    caseSensitive: true,
   });
 
-  const agentDetailsMatch = useRouteMatch({
+  const agentDetailsMatch = useMatch({
     path: '/agents/:agentId',
-    strict: false,
-    sensitive: true,
-    exact: true,
+    end: false,
+    caseSensitive: true,
   });
 
-  const createAgentMatch = useRouteMatch({
-    path: '/agents/create',
-    strict: false,
-    sensitive: true,
-    exact: false,
+  const createAgentMatch = useMatch({
+    path: '/agents/create/*',
+    end: false,
+    caseSensitive: true,
   });
 
   if (connectClusterMatch && connectClusterMatch.params.connectorName === 'create-connector') return false;
@@ -167,11 +160,10 @@ function useShouldShowRefresh() {
 }
 
 function useShouldShowBetaBadge() {
-  const agentsMatch = useRouteMatch({
-    path: '/agents',
-    strict: false,
-    sensitive: true,
-    exact: false,
+  const agentsMatch = useMatch({
+    path: '/agents/*',
+    end: false,
+    caseSensitive: true,
   });
 
   return agentsMatch;

@@ -303,7 +303,7 @@ const PlainLoginBox = observer((p: { provider?: Provider }) => {
               });
 
               if (resp.ok) {
-                appGlobal.history.push('/overview');
+                appGlobal.historyPush('/overview');
               } else {
                 let err = await resp.text();
                 try {

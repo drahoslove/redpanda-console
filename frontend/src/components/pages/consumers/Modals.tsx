@@ -900,7 +900,7 @@ export class DeleteOffsetsModal extends Component<{
       const remainingOffsets = group.topicOffsets.sum((t) => t.partitionOffsets.length) - offsets.length;
       if (remainingOffsets === 0) {
         // Group is fully deleted, go back to list
-        appGlobal.history.replace('/groups');
+        appGlobal.historyReplace('/groups');
       } else {
         this.props.onClose();
       }

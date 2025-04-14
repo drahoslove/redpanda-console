@@ -140,7 +140,7 @@ export class AdminDebugBundle extends Component<{}> {
                 .createDebugBundle(data)
                 .then(async (result) => {
                   await api.refreshDebugBundleStatuses();
-                  appGlobal.history.push(`/admin/debug-bundle/progress/${result.jobId}`);
+                  appGlobal.historyPush(`/admin/debug-bundle/progress/${result.jobId}`);
                 })
                 .catch((err: ErrorResponse) => {
                   this.createBundleError = err;

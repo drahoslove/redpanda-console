@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import { Component, type ReactNode } from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import { api, handleExpiredLicenseError } from '../state/backendApi';
 import type { UserData } from '../state/restInterfaces';
 import { featureErrors } from '../state/supportedFeatures';
@@ -18,17 +18,17 @@ export default class RequireAuth extends Component<{ children: ReactNode }> {
 
     return (
       <>
-        <Switch>
+        <Routes>
           {/* Login (and callbacks) */}
-          <Route exact path="/login" component={Login} />
+          <Route path="/login" Component={Login} />
           <Route
             path="/login/callbacks/:provider"
-            render={(p) => <LoginCompletePage provider={p.match.params.provider} match={p.match} />}
+            element={<LoginCompletePage />}
           />
           {/* Default View */}
           {this.props.children}
           <Route path="*" />
-        </Switch>
+        </Routes>
         <FeatureErrorCheck />
       </>
     );

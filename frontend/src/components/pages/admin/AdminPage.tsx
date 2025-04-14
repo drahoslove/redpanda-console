@@ -93,7 +93,7 @@ export default class AdminPage extends PageComponent<{ tab: AdminPageTab }> {
     const activeTab = tabs.findIndex((x) => x.key === this.props.tab);
     if (activeTab === -1) {
       // No tab selected, default to users
-      appGlobal.history.replace('/admin/users');
+      appGlobal.historyReplace('/admin/users');
     }
 
     return (
@@ -105,7 +105,7 @@ export default class AdminPage extends PageComponent<{ tab: AdminPageTab }> {
               items={tabs}
               index={activeTab >= 0 ? activeTab : 0}
               onChange={(_, key) => {
-                appGlobal.history.push(`/admin/${key}`);
+                appGlobal.historyPush(`/admin/${key}`);
               }}
             />
           ) : (

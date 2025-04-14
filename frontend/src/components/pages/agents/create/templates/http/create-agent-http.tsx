@@ -4,7 +4,7 @@ import { PipelineCreate } from 'protogen/redpanda/api/dataplane/v1/pipeline_pb';
 import { useCreateAgentPipelinesMutation } from 'react-query/api/agent';
 import { useLintConfigsMutation } from 'react-query/api/redpanda-connect';
 import { useListSecretsQuery } from 'react-query/api/secret';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import agentIllustration from '../../../../../../assets/agent-illustration-http.png';
 import { AgentDetailsForm } from './agent-details-form';
@@ -58,7 +58,7 @@ export const getPipelinePurpose = (pipelineKey: string) => {
 };
 
 export const CreateAgentHTTP = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { mutateAsync: createAgentPipelinesMutation, isPending: isCreateAgentPending } =
     useCreateAgentPipelinesMutation();
   const { mutateAsync: lintConfigsMutation, isPending: isLintConfigsPending } = useLintConfigsMutation();
@@ -117,7 +117,7 @@ export const CreateAgentHTTP = () => {
 
       await lintConfigsMutation({ pipelines });
       await createAgentPipelinesMutation({ pipelines, agentId }).then(() => {
-        history.push(`/agents/${agentId}`);
+        navigate(`/agents/${agentId}`);
       });
     },
   });

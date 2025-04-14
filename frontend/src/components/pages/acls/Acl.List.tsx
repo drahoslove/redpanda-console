@@ -153,7 +153,7 @@ class AclList extends PageComponent<{ tab: AclListTab }> {
     const activeTab = tabs.findIndex((x) => x.key === this.props.tab);
     if (activeTab === -1) {
       // No tab selected, default to users
-      appGlobal.history.replace('/security/users');
+      appGlobal.historyReplace('/security/users');
     }
 
     return (
@@ -168,7 +168,7 @@ class AclList extends PageComponent<{ tab: AclListTab }> {
             index={activeTab >= 0 ? activeTab : 0}
             items={tabs}
             onChange={(_, key) => {
-              appGlobal.history.push(`/security/${key}`);
+              appGlobal.historyPush(`/security/${key}`);
             }}
           />
         </PageContent>
@@ -236,7 +236,7 @@ const PermissionsListTab = observer(() => {
               <Button
                 variant="outline"
                 isDisabled={!Features.createUser}
-                onClick={() => appGlobal.history.push('/security/users/create')}
+                onClick={() => appGlobal.historyPush('/security/users/create')}
               >
                 Create user
               </Button>
@@ -317,7 +317,7 @@ const UsersTab = observer(() => {
             variant="outline"
             data-testid="create-user-button"
             isDisabled={!Features.createUser}
-            onClick={() => appGlobal.history.push('/security/users/create')}
+            onClick={() => appGlobal.historyPush('/security/users/create')}
           >
             Create user
           </Button>
@@ -333,7 +333,7 @@ const UsersTab = observer(() => {
               <Button
                 variant="outline"
                 isDisabled={!Features.createUser}
-                onClick={() => appGlobal.history.push('/security/users/create')}
+                onClick={() => appGlobal.historyPush('/security/users/create')}
               >
                 Create user
               </Button>
@@ -378,7 +378,7 @@ const UsersTab = observer(() => {
                         <button
                           type="button"
                           onClick={() => {
-                            appGlobal.history.push(`/security/users/${entry.name}/edit`);
+                            appGlobal.historyPush(`/security/users/${entry.name}/edit`);
                           }}
                         >
                           <Icon as={PencilIcon} />
@@ -459,7 +459,7 @@ const RolesTab = observer(() => {
         <Button
           data-testid="create-role-button"
           variant="outline"
-          onClick={() => appGlobal.history.push('/security/roles/create')}
+          onClick={() => appGlobal.historyPush('/security/roles/create')}
         >
           Create role
         </Button>
@@ -507,7 +507,7 @@ const RolesTab = observer(() => {
                       <button
                         type="button"
                         onClick={() => {
-                          appGlobal.history.push(`/security/roles/${entry.name}/edit`);
+                          appGlobal.historyPush(`/security/roles/${entry.name}/edit`);
                         }}
                       >
                         <Icon as={PencilIcon} />

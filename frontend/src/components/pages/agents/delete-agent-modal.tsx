@@ -17,7 +17,7 @@ import { useAppForm } from 'components/form/form';
 import { Pipeline } from 'protogen/redpanda/api/dataplane/v1/pipeline_pb';
 import { useEffect } from 'react';
 import { type Agent, useDeleteAgentPipelinesMutation } from 'react-query/api/agent';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { ResourceInUseAlert } from '../../misc/resource-in-use-alert';
 
@@ -35,7 +35,7 @@ export interface DeleteAgentModalProps {
 }
 
 export const DeleteAgentModal = ({ agent, isOpen, onClose }: DeleteAgentModalProps) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { mutateAsync: deleteAgentPipelines, isPending: isDeleteAgentPipelinesPending } =
     useDeleteAgentPipelinesMutation();
 
@@ -51,7 +51,7 @@ export const DeleteAgentModal = ({ agent, isOpen, onClose }: DeleteAgentModalPro
         pipelines: agent?.pipelines?.map((pipeline) => new Pipeline({ id: pipeline?.id })) ?? [],
       });
       onClose();
-      history.push('/agents');
+      navigate('/agents');
     },
   });
 

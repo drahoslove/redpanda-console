@@ -222,7 +222,7 @@ async function handle401(res: Response) {
     }
   } else {
     // Redirect to login
-    appGlobal.history.push('/login');
+    appGlobal.historyPush('/login');
   }
 }
 
@@ -351,7 +351,7 @@ export async function handleExpiredLicenseError(r: Response) {
         meta: { avatarUrl: '', email: '', name: '' },
       },
     };
-    appGlobal.history.replace('/trial-expired');
+    appGlobal.historyReplace('/trial-expired');
   }
 }
 

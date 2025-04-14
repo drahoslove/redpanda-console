@@ -21,11 +21,10 @@ import {
   ShieldCheckIcon,
 } from '@heroicons/react/outline';
 import type { NavLinkProps } from '@redpanda-data/ui/dist/components/Nav/NavLink';
-import React, { Fragment, type FunctionComponent } from 'react';
+import React, { Fragment, useEffect, type FunctionComponent } from 'react';
 import { HiOutlinePuzzlePiece } from 'react-icons/hi2';
 import { MdKey, MdOutlineSmartToy } from 'react-icons/md';
-import { Redirect, Route } from 'react-router';
-import { Switch } from 'react-router-dom';
+import { Routes, Navigate, Route, useLocation, useParams, useMatch } from 'react-router-dom';
 import { appGlobal } from 'state/appGlobal';
 import { isEmbedded, isFeatureFlagEnabled, isServerless } from '../config';
 import { api } from '../state/backendApi';
@@ -131,31 +130,32 @@ function EmitRouteViews(entries: IRouteEntry[]): JSX.Element[] {
   return entries.map((e) => e.routeJsx);
 }
 
+const NotFound = () => {
+  uiState.pageTitle = '404';
+  const location = useLocation()
+  return (
+    <Section title="404">
+      <div>
+        <h4>Path:</h4> <span>{location.pathname}</span>
+      </div>
+      <div>
+        <h4>Query:</h4> <pre>{JSON.stringify(location.search, null, 4)}</pre>
+      </div>
+    </Section>
+  );
+}
+
 export const RouteView = () => (
   <AnimatePresence mode="wait">
-    <Switch>
+    <Routes>
       {/* Index */}
-      <Route exact path="/" render={() => <Redirect to="/overview" />} />
+      <Route path="/" element={<Navigate to="/overview" replace />} />
 
       {/* Emit all <Route/> elements */}
-      {EmitRouteViews(APP_ROUTES)}
+      {/* {EmitRouteViews(APP_ROUTES)} */}
 
-      <Route
-        render={(rp) => {
-          uiState.pageTitle = '404';
-          return (
-            <Section title="404">
-              <div>
-                <h4>Path:</h4> <span>{rp.location.pathname}</span>
-              </div>
-              <div>
-                <h4>Query:</h4> <pre>{JSON.stringify(rp.location.search, null, 4)}</pre>
-              </div>
-            </Section>
-          );
-        }}
-      />
-    </Switch>
+      <Route element={<NotFound />} />
+    </Routes>
   </AnimatePresence>
 );
 
@@ -197,7 +197,7 @@ const ProtectedRoute: FunctionComponent<{ children: React.ReactNode; path: strin
   const isAgentFeatureEnabled = isFeatureFlagEnabled('enableAiAgentsInConsoleUi');
 
   if (!isAgentFeatureEnabled && path.includes('/agents')) {
-    appGlobal.history.push('/overview', { replace: true });
+    appGlobal.historyReplace('/overview');
     window.location.reload(); // Required because we want to load Cloud UI's overview, not Console UI.
   }
 
@@ -221,37 +221,42 @@ function MakeRoute<TRouteParams>(
     visibilityCheck: showCallback,
   };
 
-  // todo: verify that path and route params match
   route.routeJsx = (
     <Route
-      path={route.path}
+      path={`${route.path}${exact ? '' : '/*'}`}
       key={route.title}
-      exact={exact ? true : undefined}
-      render={(rp) => {
-        const matchedPath = rp.match.url;
-        const { ...params } = rp.match.params;
-
-        if (uiState.currentRoute && uiState.currentRoute.path !== route.path) {
-          //console.log('switching route: ' + routeStr(ui.currentRoute) + " -> " + routeStr(route));
-        }
-
-        const pageProps: PageProps<TRouteParams> = {
-          matchedPath,
-          ...params,
-        } as PageProps<TRouteParams>;
-
-        uiState.currentRoute = route;
-
-        return (
-          <ProtectedRoute path={route.path}>
-            <route.pageType {...pageProps} />
-          </ProtectedRoute>
-        );
-      }}
+      element={
+        <ProtectedRoute path={route.path}>
+          <RouteRenderer route={route} />
+        </ProtectedRoute>
+      }
     />
   );
 
   return route;
+}
+
+// Separate component to handle the route rendering logic
+function RouteRenderer<TRouteParams>({ route }: { route: PageDefinition<TRouteParams> }) {
+  const params = useParams() as TRouteParams;
+  const match = useMatch(route.path);
+  const matchedPath = match?.pathnameBase || '';
+
+  // Update current route
+  useEffect(() => {
+    if (uiState.currentRoute && uiState.currentRoute.path !== route.path) {
+      //console.log('switching route: ' + routeStr(ui.currentRoute) + " -> " + routeStr(route));
+    }
+    uiState.currentRoute = route;
+  }, [route]);
+
+  const pageProps: PageProps<TRouteParams> = {
+    matchedPath,
+    ...params,
+  } as PageProps<TRouteParams>;
+
+  const RouteComponent = route.pageType;
+  return <RouteComponent {...pageProps} />;
 }
 
 function routeVisibility(
